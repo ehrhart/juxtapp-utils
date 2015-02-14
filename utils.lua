@@ -108,6 +108,150 @@ function KAG.GetPlayersByFeature(s)
 	return r
 end
 
+-- @ KAG.IsTileDirt(tile)
+-- @ returns true if the tile is dirt, or false if it's not
+function KAG.IsTileDirt(t)
+	return table.indexOf({16,29,30,31}, t) > -1
+end
+
+-- @ KAG.IsTileDirtBack(tile)
+-- @ returns true if the tile is dirt backwall, or false if it's not
+function KAG.IsTileDirtBack(t)
+	return table.indexOf({32}, t) > -1
+end
+
+-- @ KAG.IsTileRock(tile)
+-- @ returns true if the tile is rock, or false if it's not
+function KAG.IsTileRock(t)
+	return table.indexOf({96,100,101,102,103,104}, t) > -1
+end
+
+-- @ KAG.IsTileThickRock(tile)
+-- @ returns true if the tile is rubbles, or false if it's not
+function KAG.IsTileThickRock(t)
+	return table.indexOf({208,214,215,216,217,218}, t) > -1
+end
+
+-- @ KAG.IsTileStone(tile)
+-- @ returns true if the tile is stone block, or false if it's not
+function KAG.IsTileStone(t)
+	return table.indexOf({48,58,59,60,61,62,63}, t) > -1
+end
+
+-- @ KAG.IsTileStoneBack(tile)
+-- @ returns true if the tile is stone backwall, or false if it's not
+function KAG.IsTileStoneBack(t)
+	return table.indexOf({64,76,76,77,78,79}, t) > -1
+end
+
+-- @ KAG.IsTileGold(tile)
+-- @ returns true if the tile is gold nugget, or false if it's not
+function KAG.IsTileGold(t)
+	return table.indexOf({80,91,92,93,94}, t) > -1
+end
+
+-- @ KAG.IsTileGoldBullion(tile)
+-- @ returns true if the tile is gold bullion, or false if it's not
+function KAG.IsTileGoldBullion(t)
+	return table.indexOf({160,161,162,163,164}, t) > -1
+end
+
+-- @ KAG.IsTileWood(tile)
+-- @ returns true if the tile is wood block, or false if it's not
+function KAG.IsTileWood(t)
+	return table.indexOf({196,197,198,200,201,202,203,204}, t) > -1
+end
+
+-- @ KAG.IsTileWoodBack(tile)
+-- @ returns true if the tile is wood backwall, or false if it's not
+function KAG.IsTileWoodBack(t)
+	return table.indexOf({205,207}, t) > -1
+end
+
+-- @ KAG.IsTileBack(tile)
+-- @ returns true if the tile is backwall, or false if it's not
+function KAG.IsTileBack(t)
+	return KAG.IsTileWoodBack(t) or KAG.IsTileStoneBack() or KAG.IsTileDirtBack()
+end
+
+-- @ KAG.IsTileSpike(tile)
+-- @ returns true if the tile is spike, or false if it's not
+function KAG.IsTileSpike(t)
+	return table.indexOf({167,168,169,170,171,172,192,195}, t) > -1
+end
+
+-- @ KAG.IsTileTree(tile)
+-- @ returns true if the tile is tree, or false if it's not
+function KAG.IsTileTree(t)
+	return table.indexOf({119,120,121,122,123,124,}, t) > -1
+end
+
+-- @ KAG.IsTileDoor(tile)
+-- @ returns true if the tile is door, or false if it's not
+function KAG.IsTileDoor(t)
+	return KAG.IsTileBlueDoor(t) or KAG.IsTileRedDoor(t)
+end
+
+-- @ KAG.IsTileBlueDoor(tile)
+-- @ returns true if the tile is blue door, or false if it's not
+function KAG.IsTileBlueDoor(t)
+	return table.indexOf({128,129,130,134,135,136,137,138}, t) > -1
+end
+
+-- @ KAG.IsTileRedDoor(tile)
+-- @ returns true if the tile is red door, or false if it's not
+function KAG.IsTileRedDoor(t)
+	return table.indexOf({130,131,132,133,139,140,141,142,143}, t) > -1
+end
+
+-- @ KAG.IsTileBridge(tile)
+-- @ returns true if the tile is bridge, or false if it's not
+function KAG.IsTileBridge(t)
+	return KAG.IsTileBlueBridge(t) or KAG.IsTileRedBridge(t) or table.indexOf({182,183,190,191},t) > -1
+end
+
+-- @ KAG.IsTileBlueBridge(tile)
+-- @ returns true if the tile is blue bridge, or false if it's not
+function KAG.IsTileBlueBridge(t)
+	return table.indexOf({176,177,180,184,185,188,189}, t) > -1
+end
+
+-- @ KAG.IsTileRedBridge(tile)
+-- @ returns true if the tile is red bridge, or false if it's not
+function KAG.IsTileRedBridge(t)
+	return table.indexOf({178,179,181,186,187}, t) > -1
+end
+
+-- @ KAG.IsTileWorkshop(tile)
+-- @ returns true if the tile is a workshop piece, or false if it's not
+function KAG.IsTileWorkshop(t)
+	return table.indexOf({146,147,148,149}, t) > -1
+end
+
+-- @ KAG.IsTileGrass(tile)
+-- @ returns true if the tile is grass, or false if it's not
+function KAG.IsTileGrass(t)
+	return table.indexOf({25,26,27,28}, t) > -1
+end
+
+-- @ KAG.IsTileLadder(tile)
+-- @ returns true if the tile is ladder, or false if it's not
+function KAG.IsTileLadder(t)
+	return table.indexOf({144,145,165,166}, t) > -1
+end
+
+-- @ KAG.IsTileBedrock(tile)
+-- @ returns true if the tile is bedrock, or false if it's not
+function KAG.IsTileBedrock(t)
+	return table.indexOf({106}, t) > -1
+end
+
+-- @ KAG.IsTileRubble(tile)
+-- @ returns true if the tile is rubbles, or false if it's not
+function KAG.IsTileRubble(t)
+	return table.indexOf({155}, t) > -1
+end
+
 -- @ Player.ForcePosition(x, y)
 -- @ sets the <x>:<y> position of a player and makes sure that he was teleported on client side
 function Player.ForcePosition(self, x, y)
