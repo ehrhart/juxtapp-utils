@@ -1,22 +1,6 @@
 local TILES_QUEUE = {}
 local MAP_CHUNKS = {}
 
-function WholeMap(cb)
-	local step = 0
-	local tiles = {}
-	for x=0,KAG.GetMapWidth() do
-		for y=0,KAG.GetMapHeight() do
-			table.insert(tiles, {x=x*8, y=y*8})
-			step = step + 1
-			if (step > 128) then
-				table.insert(MAP_CHUNKS, {tiles=tiles, callback=cb})
-				tiles = {}
-				step = 0
-			end
-		end
-	end
-end
-
 -- @ math.round(num, decimals)
 -- @ returns a rounded version of the number <num> with a given number of <decimals>
 function math.round(num, idp)
@@ -54,6 +38,26 @@ function table.extend(destination, source)
 		destination[k] = v
 	end
 	return destination
+end
+
+
+-- @ KAG.WholeMap(callback)
+-- @ Splits the map into chunks and calls the <callback> function every X ticks (see OnServerTick)
+function KAG.WholeMap(cb)
+	local step = 0
+	local tiles = {}
+	for x=0,KAG.GetMapWidth() do
+		for y=0,KAG.GetMapHeight() do
+			table.insert(tiles, {x=x*8, y=y*8})
+			step = step + 1
+			-- 128 tiles per chunk
+			if (step > 128) then
+				table.insert(MAP_CHUNKS, {tiles=tiles, callback=cb})
+				tiles = {}
+				step = 0
+			end
+		end
+	end
 end
 
 -- @ KAG.PushTile(x, y, tile)
@@ -107,39 +111,41 @@ end
 -- @ Player.ForcePosition(x, y)
 -- @ sets the <x>:<y> position of a player and makes sure that he was teleported on client side
 function Player.ForcePosition(self, x, y)
-	self:SetNumber("force_position_x", x)
-	self:SetNumber("force_position_y", y)
+	self:SetNumber("utils.fpx", x)
+	self:SetNumber("utils.fpy", y)
 	self:SetPosition(x, y)
 end
 
 -- @ Player.IsDead()
 -- @ returns whether the player is dead or not, by checking his position and whether he is spectating or not
 function Player.IsDead(self)
-	return (self:GetTeam() == 200 or (self:GetX() == 0 and self:GetY() == 0))
+	return (self:IsSpectating() or (self:GetX() == 0 and self:GetY() == 0))
 end
 
-function juxtappUtils_OnInit()
+-- @ Player.IsSpectating()
+-- @ returns whether the player is in the spectator team or not
+function Player.IsSpectating(self)
+	return self:GetTeam() == 200
 end
 
-function juxtappUtils_OnPlayerInit(player)
-	player:SetNumber("force_position_x", -1)
-	player:SetNumber("force_position_y", -1)
+function utils_OnPlayerInit(player)
+	player:SetNumber("utils.fpx", -1)
+	player:SetNumber("utils.fpy", -1)
 end
 
-function juxtappUtils_OnServerTick(ticks)
+function utils_OnServerTick(ticks)
 	local p, fpx, fpy
 	for i=1,KAG.GetPlayersCount() do
 		p = KAG.GetPlayerByIndex(i)
 		if (not p:IsDead()) then
-			fpx = p:GetNumber("force_position_x")
-			fpy = p:GetNumber("force_position_y")
+			fpx = p:GetNumber("utils.fpx")
+			fpy = p:GetNumber("utils.fpy")
 			if (fpx ~= -1 or fpy ~= -1) then
 				if (p:GetX() ~= fpx or p:GetY() ~= fpy) then
-					KAG.SendMessage("(" .. os.time() .. ") " .. p:GetName() .. "'s position was forced to " .. fpx .. ":" .. fpy)
 					p:SetPosition(fpx, fpy)
 				else
-					p:SetNumber("force_position_x", -1)
-					p:SetNumber("force_position_y", -1)
+					p:SetNumber("utils.fpx", -1)
+					p:SetNumber("utils.fpy", -1)
 				end
 			end
 		end
@@ -150,11 +156,16 @@ function juxtappUtils_OnServerTick(ticks)
 			if (tile == nil) then break end
 			KAG.SetTile(tile.x, tile.y, tile.t)
 		end
-		--print(#TILES_QUEUE)
 	end
 	if (#MAP_CHUNKS > 0 and ticks % 1 == 0) then
 		local chunkData = table.remove(MAP_CHUNKS)
 		chunkData.callback(chunkData.tiles)
-		print(#MAP_CHUNKS .. " chunks left to process")
 	end
+end
+
+-- Check if Juxta++ supports dynamic event hooking
+-- If it doesn't then you'll have to add them manually
+if (Juxta.GetVersion() >= 5) then
+	Plugin.OnPlayerInit(utils_OnPlayerInit)
+	Plugin.OnServerTick(utils_OnServerTick)
 end
